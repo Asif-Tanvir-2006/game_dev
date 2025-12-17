@@ -67,7 +67,7 @@ class immovable_objects:
 
 class movable_objects:
 
-    def __init__(self, x, y, image, width=1, height=1):
+    def __init__(self, x, y, image, width = 1, height = 1):
         self.x = x
         self.y = y
         self.image = pygame.image.load(image)
@@ -90,14 +90,14 @@ class movable_objects:
         
     def check_collision_x(self, obj):
         #if obj is left of self return -1, obj right of self return -1, else return 0
-        if(self.hitbox.left>obj.hitbox.right): return -1 
-        if(self.hitbox.right<obj.hitbox.left): return 1 
+        if(self.hitbox.left > obj.hitbox.right) : return -1 
+        if(self.hitbox.right < obj.hitbox.left) : return 1 
         return 0
     
     def check_collision_y(self, obj):
         #if obj is above self return -1, obj below self return -1, else return 0
-        if(self.hitbox.top>=obj.hitbox.bottom): return -1
-        if(self.hitbox.bottom<=obj.hitbox.top): return 1
+        if(self.hitbox.top >= obj.hitbox.bottom) : return -1
+        if(self.hitbox.bottom <= obj.hitbox.top) : return 1
         return 0
     
     def update(self, obj):
@@ -113,9 +113,9 @@ class movable_objects:
             elif not self.check_collision_y(obj) :
                 
                 # moves the movable object away from the object based on which side the object is
-                if(obj.hitbox.centerx>self.hitbox.centerx):
+                if(obj.hitbox.centerx > self.hitbox.centerx) :
                     self.x -= (2*self.velocity)
-                elif(obj.hitbox.centerx<self.hitbox.centerx):
+                elif(obj.hitbox.centerx < self.hitbox.centerx) :
                     self.x += (2*self.velocity)
 
     
@@ -127,7 +127,7 @@ class player:
         self.image = pygame.image.load(image)
 
         self.hitbox = self.image.get_rect()
-        self.hitbox.centerx=self.x
+        self.hitbox.centerx = self.x
         self.hitbox.bottom = self.y
 
         self.movingLeft = 0
@@ -180,9 +180,9 @@ class player:
                 self.y = self.floor
 
     # when player is falling from a height (not jumping)
-    def fall(self, weight):
+    def fall(self, weight) :
         # handles fall according to the floor set by other objects
-        if((self.y + weight*self.fall_counter) <= self.floor):
+        if((self.y + weight*self.fall_counter) <= self.floor) :
             self.y = self.y + weight*self.fall_counter
             self.fall_counter += 1
 
@@ -191,19 +191,20 @@ class player:
             self.fall_counter = 0
             self.y = self.floor        
 
-    def update(self):
-        if(self.y != self.floor and not self.jumping):
+    # updates player position based on movement and jump/fall status
+    def update(self) :
+        if(self.y != self.floor and not self.jumping) :
             self.fall(0.4)    
         if(self.jumping):
             self.jump(0.8)
-        if(self.movingLeft):
+        if(self.movingLeft) :
             self.moveLeft()
-        elif(self.movingRight):
+        elif(self.movingRight) :
             self.moveRight()
 
 
 class ground:
-    def __init__(self, y, image, width=1, height=1):
+    def __init__(self, y, image, width = 1, height = 1) :
         self.image = pygame.image.load(image)
         # self.image = pygame.transform.scale(self.image, (width, height))
         self.hitbox = self.image.get_rect()
@@ -216,7 +217,7 @@ class ground:
 
 ##########################################
 
-if __name__ == "__main__":
+if __name__ == "__main__" :
     clock = pygame.time.Clock()
 
     movable_objects_list = [movable_objects(200, 400, "./assets/image3.png", 90, 70),
@@ -227,11 +228,11 @@ if __name__ == "__main__":
     ground_obj = ground(400, "./assets/ground.jpeg")
     player_obj = player(100, 400, "./assets/player.png")
 
-    while (run):
+    while (run) :
         clock.tick(60)
-        SCREEN.fill((24,255,255))
+        SCREEN.fill((24, 255, 255))
 
-        player_obj.floor=400
+        player_obj.floor = 400
         player_obj.roof = -INF
         player_obj.leftWall = 0
         player_obj.rightWall = SCREEN_WIDTH
@@ -262,23 +263,23 @@ if __name__ == "__main__":
         ground_obj.draw()
 
         # Checks for events like keypresses
-        for event in pygame.event.get():
-            if (event.type==pygame.QUIT):
+        for event in pygame.event.get() :
+            if (event.type==pygame.QUIT) :
                 run = 0
-            if(event.type==pygame.KEYDOWN):
-                if(event.key==pygame.K_a):
+            if(event.type==pygame.KEYDOWN) :
+                if(event.key==pygame.K_a) :
                     player_obj.movingLeft = 1
                     player_obj.movingRight = 0
-                if(event.key==pygame.K_d):
+                if(event.key==pygame.K_d) :
                     player_obj.movingRight = 1
                     player_obj.movingLeft = 0
-                if(event.key==pygame.K_SPACE):
+                if(event.key==pygame.K_SPACE) :
                     player_obj.jumping = 1
                     
-            if(event.type==pygame.KEYUP):
-                if(event.key==pygame.K_a):
+            if(event.type==pygame.KEYUP) :
+                if(event.key==pygame.K_a) :
                     player_obj.movingLeft = 0
-                if(event.key==pygame.K_d):
+                if(event.key==pygame.K_d) :
                     player_obj.movingRight = 0
 
         pygame.display.update()
