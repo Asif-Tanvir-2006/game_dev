@@ -2,7 +2,6 @@ import pygame
 # import clo
 pygame.init()
 
-
 ######################3
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -10,7 +9,10 @@ SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 run = 1
 ##########################################
+
+
 class movable_objects:
+
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -19,10 +21,12 @@ class movable_objects:
         self.hitbox.centerx = self.x
         self.hitbox.bottom = self.y
         # self.hitbox_height = self.hitbox
+
     def draw(self):
         self.hitbox.centerx = self.x
         self.hitbox.bottom = self.y
         SCREEN.blit(self.image, self.hitbox)   
+
     def check_collision(self, player_obj):
         if( ((self.hitbox.left<=player_obj.hitbox.right and player_obj.hitbox.right<=self.hitbox.right) or 
                (self.hitbox.left<=player_obj.hitbox.left and player_obj.hitbox.left<=self.hitbox.right)) and player_obj.hitbox.bottom<=self.hitbox.top):
@@ -44,9 +48,13 @@ class movable_objects:
                 
                     # player_obj.y = self.hitbox.top
             # print(1)
+
     def update(self, player_obj):
         self.check_collision(player_obj)
+
+
 class player:
+
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -62,6 +70,7 @@ class player:
         self.velocity = 4
         self.ground = 400
         self.fall_counter = 0
+
     def draw(self):
         self.hitbox.centerx = self.x
         self.hitbox.bottom = self.y
@@ -70,11 +79,14 @@ class player:
 
     def moveLeft(self):
         self.x-=self.velocity
+
     def moveRight(self):
         self.x+=self.velocity
+
     def resetJump(self):
         self.jump_counter = self.time_of_flight
         self.jumping=0
+
     def jump(self, height):
             if((abs(self.jump_counter)<=self.time_of_flight and (self.y-height*self.jump_counter)<=self.ground) or self.jump_counter>=0):
                 self.y = self.y - height*self.jump_counter
@@ -82,6 +94,7 @@ class player:
             else:
                 self.resetJump()
                 self.y = self.ground
+
     def fall(self, weight):
         
         if((self.y-weight*self.fall_counter)<=self.ground):
@@ -90,7 +103,8 @@ class player:
         else:
             # self.resetJump()
             self.fall_counter = 0
-            self.y = self.ground        
+            self.y = self.ground    
+
     def update(self):
         if(self.y!=self.ground and (self.jumping==0)):
             self.fall(1)    
@@ -100,7 +114,10 @@ class player:
             self.moveLeft()
         elif(self.movingRight):
             self.moveRight()
+
+
 ##########################################
+
 player_obj = player(100, 400)
 box1 = movable_objects(200, 400)
 clock = pygame.time.Clock()
