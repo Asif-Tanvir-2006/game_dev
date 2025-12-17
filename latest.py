@@ -10,6 +10,7 @@ pygame.init()
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+INF = 1e10
 
 run = 1
 ##########################################
@@ -68,9 +69,9 @@ class movable_objects:
         self.movingLeft = 0;
         self.movingRight = 0;
         self.floor = self.y
-        self.roof = -10000000
-        self.leftWall = -1000000
-        self.rightWall = 10000000
+        self.roof = -INF
+        self.leftWall = -INF
+        self.rightWall = INF
         # self.hitbox_height = self.hitbox
     def draw(self):
         self.hitbox.centerx = self.x
@@ -116,7 +117,7 @@ class player:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.image = pygame.image.load("player.png")
+        self.image = pygame.image.load("assets/player.png")
         self.hitbox = self.image.get_rect()
         self.hitbox.centerx=self.x
         self.hitbox.bottom = self.y
@@ -177,9 +178,9 @@ class player:
             self.moveRight()
 ##########################################
 player_obj = player(100, 400)
-box1 = movable_objects(200, 400, "box.png")
-box2 = movable_objects(400, 400, "3.png")
-platform = immovable_objects(1000, 185, "platform.png")
+box1 = movable_objects(200, 400, "assets/box.png")
+box2 = movable_objects(400, 400, "assets/3.png")
+platform = immovable_objects(1000, 185, "assets/platform.png")
 clock = pygame.time.Clock()
 while (run):
     clock.tick(60)
@@ -196,7 +197,8 @@ while (run):
     box1.update(player_obj)
     box2.update(player_obj)
     player_obj.update()
-    print(player_obj.roof)
+
+    # print(player_obj.roof)
     
     box1.draw()
     box2.draw()
