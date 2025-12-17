@@ -4,17 +4,14 @@ import pygame
 pygame.init()
 #400 is the default level of floor where everything spawns
 
-######################3
+#############################################
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 INF = 1e10
 
-##########################################
 
-
-
-################################################3
+#############################################
 class immovable_objects:
 
     def __init__(self, x, y, image, width, height) :
@@ -239,8 +236,8 @@ class ground:
 class wrapper_objects:
     def __init__(self) :
         self.movable_objects_list = [
-                            movable_objects(590, 94, "./assets/image3.png", 90, 30), 
-                            movable_objects(430, 400, "./assets/image3.png", 90, 150)
+                            movable_objects(590, 0, "./assets/image3.png", 90, 30), 
+                            movable_objects(430, 0, "./assets/image3.png", 90, 150)
                             ]
         ## the first two immovable objects are left and right limits of the screen.
         self.immovable_objects_list = [immovable_objects(0, SCREEN_HEIGHT, "./assets/image3.png", 1, 1000), 
@@ -302,7 +299,7 @@ if __name__ == "__main__" :
                     )
                 )
         for mov in objects.movable_objects_list:
-            print(mov.floor)
+            # print(mov.floor)
             mov.fall(0.7)
         objects.player_obj.update()
         
