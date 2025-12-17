@@ -138,9 +138,9 @@ class player:
         self.floor = self.y
         self.fall_counter = 0
         # self.floor = self.y
-        self.roof = -10000000
-        self.leftWall = -1000000
-        self.rightWall = 10000000
+        self.roof = -INF
+        self.leftWall = -INF
+        self.rightWall = INF
     def draw(self):
         self.hitbox.centerx = self.x
         self.hitbox.bottom = self.y
@@ -195,16 +195,16 @@ if __name__ == "__main__":
     box2 = movable_objects(400, 400, "assets/3.png")
     platform = immovable_objects(1000, 185, "assets/platform.png")
     clock = pygame.time.Clock()
-    
+
     while (run):
         clock.tick(60)
 
         SCREEN.fill((24,255,255))
 
         player_obj.floor=400
-        player_obj.roof = -10000000
-        player_obj.leftWall = -1000000
-        player_obj.rightWall = 10000000
+        player_obj.roof = -INF
+        player_obj.leftWall = -INF
+        player_obj.rightWall = INF
         platform.update(player_obj)
         box1.update(box2)
         box2.update(box1)
