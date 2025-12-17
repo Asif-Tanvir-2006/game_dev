@@ -109,7 +109,7 @@ while (run):
     SCREEN.fill((24,255,255))
     player_obj.update();
     player_obj.draw();
-    print(player_obj.ground)
+    # print(player_obj.ground)
     box1.update(player_obj);
     
     box1.draw();
