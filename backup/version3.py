@@ -119,7 +119,7 @@ class player:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.image = pygame.image.load("./assets/player.png")
+        self.image = pygame.image.load("player.png")
         self.hitbox = self.image.get_rect()
         self.hitbox.centerx=self.x
         self.hitbox.bottom = self.y
@@ -190,12 +190,12 @@ class ground:
     def draw(self):
         SCREEN.blit(self.image, self.hitbox)
 player_obj = player(100, 400)
-box1 = movable_objects(200, 400, "./assets/image3.png", 90, 70)
-box2 = movable_objects(400, 400, "./assets/image3.png", 90, 150)
-platform = immovable_objects(800, 185, "./assets/ground.jpeg", 400, 90)
+box1 = movable_objects(200, 400, "image3.png", 90, 70)
+box2 = movable_objects(400, 400, "image3.png", 90, 150)
+platform = immovable_objects(800, 185, "ground.jpeg", 400, 90)
 clock = pygame.time.Clock()
 
-ground_obj = ground(400, "./assets/ground.jpeg")
+ground_obj = ground(400, "ground.jpeg")
 while (run):
     clock.tick(60)
 
