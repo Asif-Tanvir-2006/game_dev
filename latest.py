@@ -129,7 +129,7 @@ class movable_objects:
 
             # checks if object is within movable object's y coord
             elif not self.check_collision_y(obj) :
-                if(is_player): 
+                if(is_player) : 
                     obj.velocity = max(0.5, obj.velocity-0.3)
                 # moves the movable object away from the object based on which side the object is
                 if(obj.hitbox.centerx > self.hitbox.centerx) :
@@ -244,7 +244,8 @@ class wrapper_objects:
                             ]
         ## the first two immovable objects are left and right limits of the screen.
         self.immovable_objects_list = [immovable_objects(0, SCREEN_HEIGHT, "./assets/image3.png", 1, 1000), 
-                                       immovable_objects(SCREEN_WIDTH, SCREEN_HEIGHT, "./assets/image3.png", 1, 1000), immovable_objects(550, 400, "./assets/ground.jpeg", 400, 90)
+                                       immovable_objects(SCREEN_WIDTH, SCREEN_HEIGHT, "./assets/image3.png", 1, 1000), 
+                                       immovable_objects(550, 400, "./assets/ground.jpeg", 400, 90)
                                        ]
 
         self.ground_obj = ground(800, "./assets/ground.jpeg")
@@ -256,13 +257,23 @@ class wrapper_objects:
 if __name__ == "__main__" :
     clock = pygame.time.Clock()
     objects = wrapper_objects()
+
     run = True
     true_floor = 800
     true_velocity_player = 4
+
+    print("Game Started")
+    print("Shortcuts : ")
+    print("\tPress 'A' to move left")
+    print("\tPress 'D' to move right")
+    print("\tPress 'SPACE' to jump")
+    print("\tPress 'ESCAPE' to quit")
+
+
     while (run) :
         clock.tick(75)
         SCREEN.fill((24, 255, 255))
-        if(objects.player_obj.velocity<true_velocity_player):
+        if(objects.player_obj.velocity<true_velocity_player) :
                 objects.player_obj.velocity = min(true_velocity_player, 0.1+objects.player_obj.velocity) 
                 
         # objects.player_obj.velocity = true_velocity_player
@@ -322,22 +333,22 @@ if __name__ == "__main__" :
 
         # Checks for events like keypresses
         for event in pygame.event.get() :
-            if (event.type==pygame.QUIT) :
-                run = False
             if(event.type==pygame.KEYDOWN) :
-                if(event.key==pygame.K_a) :
+                if (event.key==pygame.K_ESCAPE) :
+                    run = False
+                elif(event.key==pygame.K_a) :
                     objects.player_obj.movingLeft = 1
                     objects.player_obj.movingRight = 0
-                if(event.key==pygame.K_d) :
+                elif(event.key==pygame.K_d) :
                     objects.player_obj.movingRight = 1
                     objects.player_obj.movingLeft = 0
-                if(event.key==pygame.K_SPACE) :
+                elif(event.key==pygame.K_SPACE) :
                     objects.player_obj.jumping = 1
                     
-            if(event.type==pygame.KEYUP) :
+            elif(event.type==pygame.KEYUP) :
                 if(event.key==pygame.K_a) :
                     objects.player_obj.movingLeft = 0
-                if(event.key==pygame.K_d) :
+                elif(event.key==pygame.K_d) :
                     objects.player_obj.movingRight = 0
 
         pygame.display.update()
