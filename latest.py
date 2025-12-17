@@ -1,9 +1,7 @@
 import pygame
 # import clo
+
 pygame.init()
-
-
-#pls check this once
 #400 is the default level of floor where everything spawns
 
 ######################3
@@ -12,8 +10,6 @@ SCREEN_HEIGHT = 600
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 INF = 1e10
 
-run = 1
-
 ##########################################
 
 
@@ -21,7 +17,7 @@ run = 1
 ################################################3
 class immovable_objects:
 
-    def __init__(self, x, y, image, width, height):
+    def __init__(self, x, y, image, width, height) :
         self.x = x
         self.y = y
         self.image = pygame.image.load(image)
@@ -31,25 +27,25 @@ class immovable_objects:
         self.hitbox.bottom = self.y
         self.velocity = 4
 
-    def draw(self):
+    def draw(self) :
         self.hitbox.left = self.x
         self.hitbox.bottom = self.y
         SCREEN.blit(self.image, self.hitbox)   
         pygame.draw.rect(SCREEN, (0, 0, 0), self.hitbox, 2)
         
-    def check_collision_x(self, obj):
+    def check_collision_x(self, obj) :
         #if obj is left of self return -1, obj right of self return 1, else return 0
-        if(self.hitbox.left > obj.hitbox.right): return -1 
-        if(self.hitbox.right < obj.hitbox.left): return 1 
+        if(self.hitbox.left > obj.hitbox.right) : return -1 
+        elif(self.hitbox.right < obj.hitbox.left) : return 1 
         return 0
     
-    def check_collision_y(self, obj):
+    def check_collision_y(self, obj) :
         #if obj is above self return -1, obj below self return 1, else return 0
-        if(self.hitbox.top >= obj.hitbox.bottom): return -1
-        if(self.hitbox.bottom <= obj.hitbox.top): return 1
+        if(self.hitbox.top >= obj.hitbox.bottom) : return -1
+        elif(self.hitbox.bottom <= obj.hitbox.top) : return 1
         return 0
     
-    def update(self, obj):
+    def update(self, obj) :
         # checks if there is a collision within x coord
         if not self.check_collision_x(obj) :
 
@@ -63,19 +59,19 @@ class immovable_objects:
 
             else :
                 # sets a wall on the object based on which side the immovable object is
-                if(self.hitbox.centerx > obj.hitbox.centerx):
+                if(self.hitbox.centerx > obj.hitbox.centerx) :
                     obj.rightWall = self.hitbox.left
-                elif(self.hitbox.centerx < obj.hitbox.centerx):
+                elif(self.hitbox.centerx < obj.hitbox.centerx) :
                     obj.leftWall = self.hitbox.right
-    def update_movables(self, obj):
+
+    def update_movables(self, obj) :
         # checks if there is a collision within x coord
         if not self.check_collision_x(obj) :
 
             # checks if object is above immovable object
             if (self.check_collision_y(obj) == -1) :
                 obj.floor = min(self.hitbox.top, obj.floor)
-                # print("u")
-                return 0;
+                return 0
             # checks if object is colliding with immovable object in y coords
             elif not (self.check_collision_y(obj)) :
                 return 1 # obj is ready for conversion from movable to immovable
@@ -83,7 +79,7 @@ class immovable_objects:
 
 class movable_objects:
 
-    def __init__(self, x, y, image, width = 1, height = 1):
+    def __init__(self, x, y, image, width = 1, height = 1) :
         self.image_path = image
         self.x = x
         self.y = y
@@ -101,30 +97,32 @@ class movable_objects:
         self.fall_counter = 0
 
 
-    def draw(self):
+    def draw(self) :
         self.hitbox.centerx = self.x
         self.hitbox.bottom = self.y
         SCREEN.blit(self.image, self.hitbox)   
         pygame.draw.rect(SCREEN, (0, 0, 0), self.hitbox, 2)
-    def check_collision_x(self, obj):
+    def check_collision_x(self, obj) :
         #if obj is left of self return -1, obj right of self return -1, else return 0
         if(self.hitbox.left > obj.hitbox.right) : return -1 
-        if(self.hitbox.right < obj.hitbox.left) : return 1 
+        elif(self.hitbox.right < obj.hitbox.left) : return 1 
         return 0
     
-    def check_collision_y(self, obj):
+    def check_collision_y(self, obj) :
         #if obj is above self return -1, obj below self return -1, else return 0
         if(self.hitbox.top >= obj.hitbox.bottom) : return -1
-        if(self.hitbox.bottom <= obj.hitbox.top) : return 1
+        elif(self.hitbox.bottom <= obj.hitbox.top) : return 1
         return 0
-    def fall(self, weight):
-        if(self.y + self.fall_counter * weight<=self.floor):
+    
+    def fall(self, weight) :
+        if(self.y + self.fall_counter * weight <= self.floor) :
             self.y = self.y+self.fall_counter * weight
             self.fall_counter +=1
         else:
             self.y = self.floor
             self.fall_counter = 0
-    def update(self, obj):
+
+    def update(self, obj) :
         # checks if there is a collision within x coord
         if not self.check_collision_x(obj) :
 
@@ -172,11 +170,11 @@ class player:
         pygame.draw.rect(SCREEN, (255, 0, 0), self.hitbox, 2)
 
     def moveLeft(self) :
-        if(self.hitbox.left - self.velocity >= self.leftWall): 
+        if(self.hitbox.left - self.velocity >= self.leftWall) : 
             self.x -= self.velocity
 
     def moveRight(self) :
-        if(self.hitbox.right + self.velocity <= self.rightWall): 
+        if(self.hitbox.right + self.velocity <= self.rightWall) : 
             self.x += self.velocity
 
     def resetJump(self) :
@@ -207,7 +205,7 @@ class player:
         if((self.y + weight*self.fall_counter) <= self.floor) :
             self.y = self.y + weight*self.fall_counter
             self.fall_counter += 1
-            # print("iww")
+
         # reached the floor
         else:
             self.fall_counter = 0
@@ -217,7 +215,7 @@ class player:
     def update(self) :
         if(self.y != self.floor and not self.jumping) :
             self.fall(0.7)    
-        if(self.jumping):
+        if(self.jumping) :
             self.jump(0.8)
         if(self.movingLeft) :
             self.moveLeft()
@@ -233,27 +231,33 @@ class ground:
         self.hitbox.top = y
         self.hitbox.left = 0
     
-    def draw(self):
+    def draw(self) :
         SCREEN.blit(self.image, self.hitbox)
 
-
+# Class to hold all objects being used in-game
 ##########################################
 class wrapper_objects:
-    def __init__(self):
+    def __init__(self) :
         self.movable_objects_list = [
-                            movable_objects(590, 94, "./assets/image3.png", 90, 30), movable_objects(430, 400, "./assets/image3.png", 90, 150)]
+                            movable_objects(590, 94, "./assets/image3.png", 90, 30), 
+                            movable_objects(430, 400, "./assets/image3.png", 90, 150)
+                            ]
         ## the first two immovable objects are left and right limits of the screen.
-        self.immovable_objects_list = [immovable_objects(0, SCREEN_HEIGHT, "./assets/image3.png", 1, 1000), immovable_objects(SCREEN_WIDTH, SCREEN_HEIGHT, "./assets/image3.png", 1, 1000), immovable_objects(550, 185, "./assets/ground.jpeg", 400, 90)]
+        self.immovable_objects_list = [immovable_objects(0, SCREEN_HEIGHT, "./assets/image3.png", 1, 1000), 
+                                       immovable_objects(SCREEN_WIDTH, SCREEN_HEIGHT, "./assets/image3.png", 1, 1000), immovable_objects(550, 185, "./assets/ground.jpeg", 400, 90)
+                                       ]
 
         self.ground_obj = ground(400, "./assets/ground.jpeg")
         self.player_obj = player(100, 400, "./assets/player.png")
 
 
-
+# Main Function Loop
 #################################################################################
 if __name__ == "__main__" :
     clock = pygame.time.Clock()
-    objects = wrapper_objects();
+    objects = wrapper_objects()
+    run = True
+
     while (run) :
         clock.tick(60)
         SCREEN.fill((24, 255, 255))
@@ -276,11 +280,12 @@ if __name__ == "__main__" :
 
         for box in objects.movable_objects_list:
             box.update(objects.player_obj)
+
         ############checks if any movable object becomes immovable#############    
         to_convert = []
         for mov in objects.movable_objects_list:
             for immov in objects.immovable_objects_list:
-                if(immov.update_movables(mov)):
+                if(immov.update_movables(mov)) :
                     to_convert.append(mov)
                     break
                 
@@ -300,7 +305,6 @@ if __name__ == "__main__" :
             print(mov.floor)
             mov.fall(0.7)
         objects.player_obj.update()
-        # print(player_obj.roof)
         
         # Drawing objects
         for box in objects.movable_objects_list:
@@ -315,7 +319,7 @@ if __name__ == "__main__" :
         # Checks for events like keypresses
         for event in pygame.event.get() :
             if (event.type==pygame.QUIT) :
-                run = 0
+                run = False
             if(event.type==pygame.KEYDOWN) :
                 if(event.key==pygame.K_a) :
                     objects.player_obj.movingLeft = 1
