@@ -223,7 +223,7 @@ class player:
 
 
 class ground:
-    def __init__(self, y, image, width = 1920, height = 220) :
+    def __init__(self, y, image, width = 1920, height = 290) :
         self.image = pygame.image.load(image)
         self.image = pygame.transform.scale(self.image, (width, height))
         self.hitbox = self.image.get_rect()
