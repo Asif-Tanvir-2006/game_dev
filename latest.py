@@ -90,15 +90,21 @@ class immovable_objects:
 
             # Object is below immovable
             elif self.check_collision_y(obj) == 1:
-                obj.roof = self.hitbox.bottom
+                obj.roof = max(obj.roof, self.hitbox.bottom)
 
             # Object is colliding horizontally
-            else:
-                # Assign wall based on relative position
-                if self.hitbox.centerx > obj.hitbox.centerx:
-                    obj.rightWall = self.hitbox.left
-                elif self.hitbox.centerx < obj.hitbox.centerx:
-                    obj.leftWall = self.hitbox.right
+            
+
+            # Movable object collides vertically
+            elif not self.check_collision_y(obj):
+                if(obj.hitbox.centerx<self.hitbox.centerx):
+                    obj.can_move_right = 0
+                    obj.hitbox.right = self.hitbox.left
+                    obj.x = obj.hitbox.centerx
+                elif(obj.hitbox.centerx>self.hitbox.centerx):
+                    obj.can_move_left = 0
+                    obj.hitbox.left = self.hitbox.right
+                    obj.x = obj.hitbox.centerx
 
     def update_movables(self, obj):
         # Checks if there is a collision within x-coordinates
@@ -113,8 +119,12 @@ class immovable_objects:
             elif not self.check_collision_y(obj):
                 if(obj.hitbox.centerx<self.hitbox.centerx):
                     obj.can_move_right = 0
+                    obj.hitbox.right = self.hitbox.left
+                    obj.x = obj.hitbox.centerx
                 elif(obj.hitbox.centerx>self.hitbox.centerx):
                     obj.can_move_left = 0
+                    obj.hitbox.left = self.hitbox.right
+                    obj.x = obj.hitbox.centerx
             return 0
 
 #############################################
@@ -263,7 +273,7 @@ class player:
         # ---------------- PHYSICS ----------------
         self.time_of_flight = 20
         self.jump_counter = self.time_of_flight
-        self.velocity = 4
+        self.velocity = 1
         self.floor = self.y
         self.fall_counter = 0
         self.roof = -INF
@@ -426,8 +436,10 @@ class wrapper_objects:
         self.movable_objects_list = [
             # movable_objects(1000, 0, "./assets/RTS_Crate.png", 165, 165),
             # movable_objects(1200, 0, "./assets/RTS_Crate.png", 200, 420),
-            movable_objects(1600, 0, "./assets/RTS_Crate.png", 165, 165),
-            movable_objects(1400, 0, "./assets/RTS_Crate.png", 330, 500),
+            movable_objects(1600, 600, "./assets/RTS_Crate.png", 165, 165),
+            movable_objects(700, 0, "./assets/RTS_Crate.png", 200, 300),
+            movable_objects(350, 0, "./assets/RTS_Crate.png", 165, 165),
+            
         ]
 
         # First two immovables define screen bounds
@@ -437,7 +449,9 @@ class wrapper_objects:
             
             
             ############platforms
-            immovable_objects(550, 400, "./assets/ground.png", 400, 90),
+            ##x, y           image width height
+            immovable_objects(550, 550, "./assets/ground.png", 400, 90),
+            immovable_objects(1300, 250, "./assets/ground.png", 1000, 90),
         ]
 
         self.ground_obj = ground(800, "./assets/ground.png")
@@ -447,7 +461,9 @@ class wrapper_objects:
 
         self.skybox = sky("./assets/sky.jpg")
         self.tree_obj = background_objects("./assets/tree.png", 500, 500, 100, 845)
-        self.tractor_obj = background_objects("./assets/tra.png", 500, 500, 700, 880)
+        self.tractor_obj = background_objects("./assets/tra.png", 500, 500, 900, 880)
+        self.sign_obj = background_objects("./assets/sign.png", 200, 200, 1700, 200)
+        
 #############################################
 # MAIN LOOP HELPERS
 #############################################
@@ -466,7 +482,7 @@ def reinitalise_params():
     objects.player_obj.floor = 800
     objects.player_obj.roof = -INF
     objects.player_obj.leftWall = 0
-    objects.player_obj.velocity = 8
+    objects.player_obj.velocity = 5
     objects.player_obj.rightWall = SCREEN_WIDTH
     objects.player_obj.can_move_right = 1
     objects.player_obj.can_move_left = 1
@@ -484,6 +500,7 @@ def reinitalise_params():
 def draw_all():
     objects.skybox.draw()
     objects.tree_obj.draw()
+    objects.sign_obj.draw()
     objects.tractor_obj.draw()
     for platform in objects.immovable_objects_list:
         platform.draw()
