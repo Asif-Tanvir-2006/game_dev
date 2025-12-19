@@ -10,6 +10,28 @@ SCREEN_HEIGHT = 1080
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 INF = 1e10
 
+
+def load_spritesheet(path, frame_width, frame_height, num_frames, scale=1):
+    sheet = pygame.image.load(path).convert_alpha()
+    frames = []
+
+    for i in range(num_frames):
+        frame = pygame.Surface((frame_width, frame_height), pygame.SRCALPHA)
+        frame.blit(sheet, (0, 0), (i * frame_width, 0, frame_width, frame_height))
+
+        if scale != 1:
+            frame = pygame.transform.scale(
+                frame,
+                (int(frame_width * scale), int(frame_height * scale))
+            )
+
+        frames.append(frame)
+
+    return frames
+
+
+
+
 #############################################
 # IMMUTABLE / STATIC OBJECTS (PLATFORMS, WALLS)
 #############################################
@@ -42,9 +64,9 @@ class immovable_objects:
         # If obj is left of self return -1
         # If obj is right of self return 1
         # Else return 0
-        if self.hitbox.left > obj.hitbox.right:
+        if self.hitbox.left >= obj.hitbox.right:
             return -1
-        elif self.hitbox.right < obj.hitbox.left:
+        elif self.hitbox.right <= obj.hitbox.left:
             return 1
         return 0
 
@@ -63,7 +85,7 @@ class immovable_objects:
         if not self.check_collision_x(obj):
 
             # Object is above immovable
-            if self.check_collision_y(obj) == -1:
+            if self.check_collision_y(obj) == -1 :
                 obj.floor = min(self.hitbox.top, obj.floor)
 
             # Object is below immovable
@@ -132,9 +154,9 @@ class movable_objects:
         # If obj is left return -1
         # If obj is right return 1
         # Else return 0
-        if self.hitbox.left > obj.hitbox.right:
+        if self.hitbox.left >= obj.hitbox.right:
             return -1
-        elif self.hitbox.right < obj.hitbox.left:
+        elif self.hitbox.right <= obj.hitbox.left:
             return 1
         return 0
 
@@ -170,9 +192,12 @@ class movable_objects:
             elif not self.check_collision_y(obj):
                 if(not self.can_move_right and self.hitbox.centerx>obj.hitbox.centerx):
                     obj.can_move_right = self.can_move_right
+                    obj.hitbox.right = self.hitbox.left
+                    obj.x = obj.hitbox.centerx
                 if(not self.can_move_left and self.hitbox.centerx<obj.hitbox.centerx):
                     obj.can_move_left = self.can_move_left
-
+                    obj.hitbox.left = self.hitbox.right
+                    obj.x = obj.hitbox.centerx
                 # Player pushing right
 
                 if obj.hitbox.centerx < self.hitbox.centerx and player_obj.hitbox.centerx < self.hitbox.centerx and self.can_move_right:
@@ -184,54 +209,119 @@ class movable_objects:
                 # Player pushing left
                 elif obj.hitbox.centerx > self.hitbox.centerx and player_obj.hitbox.centerx > self.hitbox.centerx and self.can_move_left:
                     self.can_move_right = 1
-                    print(self.can_move_right)
-                    print("alpha")
+                    # print(self.can_move_right)
+                    # print("alpha")
                     self.hitbox.right = obj.hitbox.left
                     self.x = self.hitbox.centerx
 
 
 
-#############################################
-# PLAYER CLASS
-#############################################
 class player:
 
-    def __init__(self, x, y, image):
+    def __init__(self, x, y, image_path=None):
         self.x = x
         self.y = y
 
-        self.image = pygame.image.load(image)
+        # ---------------- ANIMATIONS ----------------
+        self.animations = {
+            "idle": load_spritesheet(
+                "./assets/sheep_stand.png",
+                frame_width=360,   # 1080 / 5
+                frame_height=299,
+                num_frames=3,
+                scale=0.427 * 0.7
+            ),
+            "walk": load_spritesheet(
+                "./assets/sheep_walk.png",
+                frame_width=270,   # 1080 / 4
+                frame_height=213,
+                num_frames=3,
+                scale=0.6 * 0.7
+            ),
+        }
+        
+        self.state = "idle"
+        self.frame_index = 0
+        self.animation_speed_idle = 0.03
+        self.animation_speed_walk = 0.1
+        self.shrunk = False
+        self.facing_right = True
+        self.image = self.animations[self.state][0]
+
+        # ---------------- HITBOX ----------------
         self.hitbox = self.image.get_rect()
         self.hitbox.centerx = self.x
         self.hitbox.bottom = self.y
-        self.can_move_right = 1
-        self.can_move_left = 1
-        # Movement state
-        self.in_motion = 1
+        # self.idle_left = self.hitbox.width
+        # self.hitbox.width -= 20
+        self.hitbox.height -= 10 ##ADJUSTINEEDED
+        # ---------------- MOVEMENT ----------------
         self.movingLeft = 0
         self.movingRight = 0
         self.jumping = 0
 
-        # Jump physics
+        # ---------------- PHYSICS ----------------
         self.time_of_flight = 20
         self.jump_counter = self.time_of_flight
         self.velocity = 4
-
-        # Collision constraints
         self.floor = self.y
         self.fall_counter = 0
         self.roof = -INF
         self.leftWall = 0
         self.rightWall = SCREEN_WIDTH
+        self.can_move_right = 1
+        self.can_move_left = 1
 
+
+    # def restoreWdith():
+        
+    # ------------------------------------------------
+    # STATE LOGIC
+    # ------------------------------------------------
+    def update_state(self):
+        new_state = "walk" if (self.movingLeft or self.movingRight) else "idle"
+
+        if new_state != self.state:
+            self.state = new_state
+            self.frame_index = 0  # reset animation cleanly
+
+    # ------------------------------------------------
+    # ANIMATION
+    # ------------------------------------------------
+    def animate(self):
+        frames = self.animations[self.state]
+        if(self.state=="idle"):
+            self.frame_index += self.animation_speed_idle
+        else:
+            self.frame_index += self.animation_speed_walk
+            
+        if self.frame_index >= len(frames):
+            self.frame_index = 0
+
+        frame = frames[int(self.frame_index)]
+
+        if not self.facing_right:
+            frame = pygame.transform.flip(frame, True, False)
+
+        self.image = frame
+
+    # ------------------------------------------------
+    # DRAW
+    # ------------------------------------------------
     def draw(self):
         self.hitbox.centerx = self.x
         self.hitbox.bottom = self.y
         SCREEN.blit(self.image, self.hitbox)
-        pygame.draw.rect(SCREEN, (0, 0, 255), self.hitbox, 3)
-
+        # pygame.draw.rect(SCREEN, (0, 0, 0), self.hitbox, 3)
+        # if(self.movingLeft):
+            # pygame.draw.rect(SCREEN, (0, 0, 0), (self.hitbox.right, self.hitbox.bottom-20, 10, 10))
+            
+    # ------------------------------------------------  
+    # MOVEMENT
+    # ------------------------------------------------
     def moveLeft(self):
-        if(not self.can_move_left):
+        self.facing_right = False
+        if not self.can_move_left:
             return
         if self.hitbox.left - self.velocity >= self.leftWall:
             self.x -= self.velocity
@@ -239,26 +329,26 @@ class player:
             self.x = self.leftWall + self.hitbox.width / 2
 
     def moveRight(self):
-        if(not self.can_move_right):
+        self.facing_right = True
+        if not self.can_move_right:
             return
         if self.hitbox.right + self.velocity <= self.rightWall:
             self.x += self.velocity
         else:
             self.x = self.rightWall - self.hitbox.width / 2
-            print("wow")
 
+    # ------------------------------------------------
+    # JUMP / FALL
+    # ------------------------------------------------
     def resetJump(self):
         self.jump_counter = self.time_of_flight
         self.jumping = 0
 
     def jump(self, height):
-        # Handles jump relative to roof and floor
         if (self.y - height * self.jump_counter) <= self.floor or self.jump_counter >= 0:
             self.y = max(self.y - height * self.jump_counter, self.roof + self.hitbox.height)
-
             if self.y == self.roof + self.hitbox.height:
                 self.jump_counter = 0
-
             self.jump_counter -= 1
         else:
             self.resetJump()
@@ -266,22 +356,31 @@ class player:
 
     def fall(self, weight):
         if (self.y + weight * self.fall_counter) <= self.floor:
-            self.y = self.y + weight * self.fall_counter
+            
+            self.y += weight * self.fall_counter
             self.fall_counter += 1
         else:
             self.fall_counter = 0
             self.y = self.floor
 
+    
+    # ------------------------------------------------
+    # UPDATE
+    # ------------------------------------------------
     def update(self):
+        
         if self.y != self.floor and not self.jumping:
             self.fall(0.7)
         if self.jumping:
-            self.jump(0.8)
+            self.jump(1)
+
         if self.movingLeft:
             self.moveLeft()
         elif self.movingRight:
             self.moveRight()
 
+        self.update_state()
+        self.animate()
 
 #############################################
 # GROUND CLASS
@@ -328,7 +427,7 @@ class wrapper_objects:
             # movable_objects(1000, 0, "./assets/RTS_Crate.png", 165, 165),
             # movable_objects(1200, 0, "./assets/RTS_Crate.png", 200, 420),
             movable_objects(1600, 0, "./assets/RTS_Crate.png", 165, 165),
-            movable_objects(1400, 0, "./assets/RTS_Crate.png", 330, 330),
+            movable_objects(1400, 0, "./assets/RTS_Crate.png", 330, 500),
         ]
 
         # First two immovables define screen bounds
@@ -342,7 +441,10 @@ class wrapper_objects:
         ]
 
         self.ground_obj = ground(800, "./assets/ground.png")
-        self.player_obj = player(100, 400, "./assets/player.png")
+        self.player_obj = player(100, 100, "./assets/sheep_walk.png")
+        # self.player_obj1 = player(200, 100, "./assets/sheep_walk.png")
+        # self.player_obj2 = player(300, 100, "./assets/sheep_walk.png")
+
         self.skybox = sky("./assets/sky.jpg")
         self.tree_obj = background_objects("./assets/tree.png", 500, 500, 100, 845)
         self.tractor_obj = background_objects("./assets/tra.png", 500, 500, 700, 880)
@@ -368,7 +470,9 @@ def reinitalise_params():
     objects.player_obj.rightWall = SCREEN_WIDTH
     objects.player_obj.can_move_right = 1
     objects.player_obj.can_move_left = 1
-    
+        
+        # objects.player_obj.hitbox.width =objects.player_obj.idle_width
+         
     for mov in objects.movable_objects_list:
         mov.floor = 800
         mov.leftWall = -INF
@@ -388,6 +492,9 @@ def draw_all():
         box.draw()
     
     objects.player_obj.draw()
+    # objects.player_obj1.draw()
+    # objects.player_obj2.draw()
+    
     objects.ground_obj.draw()
 def update_player_wrt_immovable():
     for immovable_object in objects.immovable_objects_list:
