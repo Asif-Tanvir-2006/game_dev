@@ -126,7 +126,7 @@ class movable_objects:
         self.hitbox.centerx = self.x
         self.hitbox.bottom = self.y
         SCREEN.blit(self.image, self.hitbox)
-
+        pygame.draw.rect(SCREEN, (0, 0, 0), self.hitbox, 2)
 
     def check_collision_x(self, obj):
         # If obj is left return -1
@@ -153,6 +153,8 @@ class movable_objects:
             self.y = self.y + self.fall_counter * weight
             self.fall_counter += 1
         else:
+            # self.can_move_left = 1
+            # self.can_move_right = 1
             self.y = self.floor
             self.fall_counter = 0
 
@@ -226,7 +228,7 @@ class player:
         self.hitbox.centerx = self.x
         self.hitbox.bottom = self.y
         SCREEN.blit(self.image, self.hitbox)
-        pygame.draw.rect(SCREEN, (255, 0, 0), self.hitbox, 2)
+        pygame.draw.rect(SCREEN, (0, 0, 255), self.hitbox, 3)
 
     def moveLeft(self):
         if(not self.can_move_left):
@@ -294,6 +296,8 @@ class ground:
 
     def draw(self):
         SCREEN.blit(self.image, self.hitbox)
+        pygame.draw.rect(SCREEN, (0, 0, 0), self.hitbox, 3)
+        
 
 class sky:
     def __init__(self, image, width=1920, height=1080):
@@ -305,29 +309,43 @@ class sky:
 
     def draw(self):
         SCREEN.blit(self.image, self.hitbox)
+class background_objects:
+    def __init__(self, image, width, height, x, y):
+        self.image = pygame.image.load(image)
+        self.image = pygame.transform.scale(self.image, (width, height))
+        self.hitbox = self.image.get_rect()
+        self.hitbox.bottom = y
+        self.hitbox.left = x
+
+    def draw(self):
+        SCREEN.blit(self.image, self.hitbox)
 #############################################
 # WRAPPER CLASS (HOLDS ALL OBJECTS)
 #############################################
 class wrapper_objects:
     def __init__(self):
         self.movable_objects_list = [
-            movable_objects(1000, 0, "./assets/image3.png", 90, 150),
-            movable_objects(1200, 0, "./assets/image3.png", 90, 300),
-            movable_objects(1400, 0, "./assets/image3.png", 90, 450),
-            movable_objects(1600, 0, "./assets/image3.png", 90, 60),
+            # movable_objects(1000, 0, "./assets/RTS_Crate.png", 165, 165),
+            # movable_objects(1200, 0, "./assets/RTS_Crate.png", 200, 420),
+            movable_objects(1600, 0, "./assets/RTS_Crate.png", 165, 165),
+            movable_objects(1400, 0, "./assets/RTS_Crate.png", 330, 330),
         ]
 
         # First two immovables define screen bounds
         self.immovable_objects_list = [
             immovable_objects(0, SCREEN_HEIGHT, "./assets/image3.png", 1, 1000),
             immovable_objects(SCREEN_WIDTH, SCREEN_HEIGHT, "./assets/image3.png", 1, 1000),
-            immovable_objects(550, 400, "./assets/ground.jpeg", 400, 90),
+            
+            
+            ############platforms
+            immovable_objects(550, 400, "./assets/ground.png", 400, 90),
         ]
 
-        self.ground_obj = ground(800, "./assets/ground.jpeg")
+        self.ground_obj = ground(800, "./assets/ground.png")
         self.player_obj = player(100, 400, "./assets/player.png")
         self.skybox = sky("./assets/sky.jpg")
-
+        self.tree_obj = background_objects("./assets/tree.png", 500, 500, 100, 845)
+        self.tractor_obj = background_objects("./assets/tra.png", 500, 500, 700, 880)
 #############################################
 # MAIN LOOP HELPERS
 #############################################
@@ -346,7 +364,7 @@ def reinitalise_params():
     objects.player_obj.floor = 800
     objects.player_obj.roof = -INF
     objects.player_obj.leftWall = 0
-    objects.player_obj.velocity = 4
+    objects.player_obj.velocity = 8
     objects.player_obj.rightWall = SCREEN_WIDTH
     objects.player_obj.can_move_right = 1
     objects.player_obj.can_move_left = 1
@@ -355,14 +373,20 @@ def reinitalise_params():
         mov.floor = 800
         mov.leftWall = -INF
         mov.rightWall = INF
+        if(mov.y!=mov.floor):
+            mov.can_move_left = 1
+            mov.can_move_right = 1
 
 def draw_all():
     objects.skybox.draw()
-
-    for box in objects.movable_objects_list:
-        box.draw()
+    objects.tree_obj.draw()
+    objects.tractor_obj.draw()
     for platform in objects.immovable_objects_list:
         platform.draw()
+    
+    for box in objects.movable_objects_list:
+        box.draw()
+    
     objects.player_obj.draw()
     objects.ground_obj.draw()
 def update_player_wrt_immovable():
