@@ -333,8 +333,8 @@ class wrapper_objects:
 
         # First two immovables define screen bounds
         self.immovable_objects_list = [
-            immovable_objects(0, SCREEN_HEIGHT, "./assets/image3.png", 1, 1000),
-            immovable_objects(SCREEN_WIDTH, SCREEN_HEIGHT, "./assets/image3.png", 1, 1000),
+            immovable_objects(0, SCREEN_HEIGHT, "./assets/RTS_Crate.png", 1, 1000),
+            immovable_objects(SCREEN_WIDTH, SCREEN_HEIGHT, "./assets/RTS_Crate.png", 1, 1000),
             
             
             ############platforms
