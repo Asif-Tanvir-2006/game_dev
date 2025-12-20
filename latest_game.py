@@ -4,15 +4,16 @@ from systems.draw import draw_all, reset_screen
 import systems.update as Update
 from core.wrappers import wrapper_objects
 
-objects = wrapper_objects()
-clock = pygame.time.Clock()
 
 #############################################
 # PROGRAM ENTRY POINT
 #############################################
 if __name__ == "__main__":
 
+    clock = pygame.time.Clock()
+    objects = wrapper_objects()
     run = True
+    
     helper_menu()
 
     while run:
