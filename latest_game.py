@@ -1,4 +1,5 @@
 import pygame
+from core.constants import FPS
 from systems.input import handle_key_presses, helper_menu
 from systems.draw import draw_all, reset_screen
 import systems.update as Update
@@ -17,7 +18,7 @@ if __name__ == "__main__":
     helper_menu()
 
     while run:
-        Update.update_FPS(clock, 100)
+        Update.update_FPS(clock, FPS)
 
         reset_screen()
         Update.reinitalise_params(objects)

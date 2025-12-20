@@ -64,8 +64,6 @@ class immovable_objects:
                 obj.roof = max(obj.roof, self.hitbox.bottom)
 
             # Object is colliding horizontally
-            
-
             # Movable object collides vertically
             elif not self.check_collision_y(obj):
                 if(obj.hitbox.centerx<self.hitbox.centerx):
@@ -97,6 +95,7 @@ class immovable_objects:
                     obj.hitbox.left = self.hitbox.right
                     obj.x = obj.hitbox.centerx
             return 0
+
 
 #############################################
 # MOVABLE OBJECTS (BOXES)
@@ -171,24 +170,24 @@ class movable_objects:
 
             # Object is colliding vertically
             elif not self.check_collision_y(obj):
-                if(not self.can_move_right and self.hitbox.centerx>obj.hitbox.centerx):
+                if(not self.can_move_right and (self.hitbox.centerx > obj.hitbox.centerx)):
                     obj.can_move_right = self.can_move_right
                     obj.hitbox.right = self.hitbox.left
                     obj.x = obj.hitbox.centerx
-                if(not self.can_move_left and self.hitbox.centerx<obj.hitbox.centerx):
+                if(not self.can_move_left and (self.hitbox.centerx < obj.hitbox.centerx)):
                     obj.can_move_left = self.can_move_left
                     obj.hitbox.left = self.hitbox.right
                     obj.x = obj.hitbox.centerx
                 # Player pushing right
 
-                if obj.hitbox.centerx < self.hitbox.centerx and player_obj.hitbox.centerx < self.hitbox.centerx and self.can_move_right:
+                if (obj.hitbox.centerx < self.hitbox.centerx) and (player_obj.hitbox.centerx < self.hitbox.centerx) and self.can_move_right:
                     self.can_move_left=1
                     self.hitbox.left = obj.hitbox.right
                     self.x = self.hitbox.centerx
                     
 
                 # Player pushing left
-                elif obj.hitbox.centerx > self.hitbox.centerx and player_obj.hitbox.centerx > self.hitbox.centerx and self.can_move_left:
+                elif (obj.hitbox.centerx > self.hitbox.centerx) and (player_obj.hitbox.centerx > self.hitbox.centerx) and self.can_move_left:
                     self.can_move_right = 1
                     # print(self.can_move_right)
                     # print("alpha")
@@ -196,7 +195,9 @@ class movable_objects:
                     self.x = self.hitbox.centerx
 
 
-
+##############################################
+# PLAYER CLASS
+##############################################
 class player:
 
     def __init__(self, x, y, image_path=None):
@@ -379,6 +380,9 @@ class ground:
         pygame.draw.rect(SCREEN, (0, 0, 0), self.hitbox, 3)
         
 
+#############################################
+# SKY CLASS
+#############################################
 class sky:
     def __init__(self, image, width=1920, height=1080):
         self.image = pygame.image.load(image)
@@ -389,6 +393,11 @@ class sky:
 
     def draw(self):
         SCREEN.blit(self.image, self.hitbox)
+
+
+#############################################
+# BACKGROUND OBJECTS CLASS
+#############################################
 class background_objects:
     def __init__(self, image, width, height, x, y):
         self.image = pygame.image.load(image)

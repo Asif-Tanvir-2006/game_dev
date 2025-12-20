@@ -1,6 +1,5 @@
 import pygame
 
-
 def helper_menu():
     print("Game Started")
     print("Shortcuts : ")

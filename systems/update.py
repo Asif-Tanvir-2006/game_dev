@@ -37,11 +37,8 @@ def update_movables_wrt_immovables(objects):
                 )
             )
 
-
-
 def update_player(objects):
     objects.player_obj.update()
-
 
 def update_FPS(clock, fps):
     clock.tick(fps)
@@ -61,7 +58,7 @@ def reinitalise_params(objects):
     objects.player_obj.can_move_right = 1
     objects.player_obj.can_move_left = 1
         
-        # objects.player_obj.hitbox.width =objects.player_obj.idle_width
+    # objects.player_obj.hitbox.width = objects.player_obj.idle_width
          
     for mov in objects.movable_objects_list:
         mov.floor = 800

@@ -13,9 +13,6 @@ def draw_all(objects):
         box.draw()
     
     objects.player_obj.draw()
-    # objects.player_obj1.draw()
-    # objects.player_obj2.draw()
-
     objects.ground_obj.draw()
 
 
