@@ -11,7 +11,7 @@
 #### THE PLAYER
 
 - You will notice I have functions for moving left, right and jumping around.
-- I feel like these functions are quite self explanatory with the comments I(actually 'WE') left (funfact: I was forced by a person to leave comments, credit where it's due, he also helped me with organising stuff, else the entire codebase was a mess)
+- I feel like these functions are quite self explanatory with the comments I(actually 'WE') left (funfact: I was forced by  ConsoleCzar-2  to leave comments, credit where it's due, he also helped me with organising stuff, else the entire codebase was a mess)
 
 #### THE MOVABLES
 
