@@ -17,28 +17,16 @@ def update_movables_wrt_other_movables(objects):
                 box.update(other_box, objects.player_obj)
 
 def update_movables_wrt_immovables(objects):
-    to_convert = []
     for mov in objects.movable_objects_list:
         for immov in objects.immovable_objects_list:
-            if immov.update_movables(mov):
-                to_convert.append(mov)
-                break
+            immov.update_movables(mov)
 
-    for mov in to_convert:
-        if mov in objects.movable_objects_list:
-            objects.movable_objects_list.remove(mov)
-            objects.immovable_objects_list.append(
-                immovable_objects(
-                    mov.hitbox.left,
-                    mov.hitbox.bottom,
-                    mov.image_path,
-                    mov.hitbox.width,
-                    mov.hitbox.height,
-                )
-            )
+
+
 
 def update_player(objects):
     objects.player_obj.update()
+
 
 def update_FPS(clock, fps):
     clock.tick(fps)
@@ -58,7 +46,7 @@ def reinitalise_params(objects):
     objects.player_obj.can_move_right = 1
     objects.player_obj.can_move_left = 1
         
-    # objects.player_obj.hitbox.width = objects.player_obj.idle_width
+        # objects.player_obj.hitbox.width =objects.player_obj.idle_width
          
     for mov in objects.movable_objects_list:
         mov.floor = 800
