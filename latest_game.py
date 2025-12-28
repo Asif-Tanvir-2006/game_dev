@@ -26,13 +26,16 @@ if __name__ == "__main__":
         Update.update_player_wrt_immovable(objects)
         Update.update_movables_wrt_immovables(objects)
 
-        Update.update_movables_wrt_player(objects)
+        Update.update_player_wrt_movables(objects)
         Update.update_movables_wrt_other_movables(objects)
 
+        Update.update_movables_wrt_player(objects)
         Update.check_fall_movables(objects)
         Update.update_player(objects)
 
         draw_all(objects)
 
         run = handle_key_presses(objects)
+        Update.reinitalise_params(objects)
+        
         pygame.display.update()

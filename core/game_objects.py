@@ -62,6 +62,8 @@ class immovable_objects:
             # Object is below immovable
             elif self.check_collision_y(obj) == 1:
                 obj.roof = max(obj.roof, self.hitbox.bottom)
+                # pass
+                
 
             # Object is colliding horizontally
             # Movable object collides vertically
@@ -162,14 +164,17 @@ class movable_objects:
 
     def update(self, obj, player_obj):
         # Checks if there is a collision within x-coordinates
+        
         if not self.check_collision_x(obj):
 
             # Object is above this movable
             if self.check_collision_y(obj) == -1:
                 obj.floor = min(obj.floor, self.hitbox.top)
-
+            elif self.check_collision_y(obj) == 1:
+                obj.roof = max(obj.roof, self.hitbox.bottom)
             # Object is colliding vertically
             elif not self.check_collision_y(obj):
+                
                 if(not self.can_move_right and (self.hitbox.centerx > obj.hitbox.centerx)):
                     obj.can_move_right = self.can_move_right
                     obj.hitbox.right = self.hitbox.left
@@ -184,23 +189,25 @@ class movable_objects:
                     self.can_move_left=1
                     self.hitbox.left = obj.hitbox.right
                     self.x = self.hitbox.centerx
-                    
 
                 # Player pushing left
                 elif (obj.hitbox.centerx > self.hitbox.centerx) and (player_obj.hitbox.centerx > self.hitbox.centerx) and self.can_move_left:
                     self.can_move_right = 1
+                    
                     # print(self.can_move_right)
                     # print("alpha")
                     self.hitbox.right = obj.hitbox.left
                     self.x = self.hitbox.centerx
-
-
+        
+        if((player_obj.hitbox.right==self.hitbox.left or player_obj.hitbox.left==self.hitbox.right) and not(self.check_collision_y(obj))): 
+            return 1
+        return 0
 ##############################################
 # PLAYER CLASS
 ##############################################
 class player:
 
-    def __init__(self, x, y, image_path=None):
+    def __init__(self, x, y, scale_):
         self.x = x
         self.y = y
 
@@ -211,14 +218,14 @@ class player:
                 frame_width=360,   # 1080 / 5
                 frame_height=299,
                 num_frames=3,
-                scale=0.427 * 0.7
+                scale=0.427 * scale_
             ),
             "walk": load_spritesheet(
                 "./assets/sheep_walk.png",
                 frame_width=270,   # 1080 / 4
                 frame_height=213,
                 num_frames=3,
-                scale=0.6 * 0.7
+                scale=0.6 * scale_
             ),
         }
         
@@ -245,7 +252,7 @@ class player:
         # ---------------- PHYSICS ----------------
         self.time_of_flight = 20
         self.jump_counter = self.time_of_flight
-        self.velocity = 1
+        self.velocity = 5
         self.floor = self.y
         self.fall_counter = 0
         self.roof = -INF
@@ -260,6 +267,25 @@ class player:
     # ------------------------------------------------
     # STATE LOGIC
     # ------------------------------------------------
+    def check_collision_x(self, obj):
+        # If obj is left return -1
+        # If obj is right return 1
+        # Else return 0
+        if self.hitbox.left >= obj.hitbox.right:
+            return -1
+        elif self.hitbox.right <= obj.hitbox.left:
+            return 1
+        return 0
+
+    def check_collision_y(self, obj):
+        # If obj is above return -1
+        # If obj is below return 1
+        # Else return 0
+        if self.hitbox.top >= obj.hitbox.bottom:
+            return -1
+        elif self.hitbox.bottom <= obj.hitbox.top:
+            return 1
+        return 0
     def update_state(self):
         new_state = "walk" if (self.movingLeft or self.movingRight) else "idle"
 
@@ -327,6 +353,8 @@ class player:
         self.jumping = 0
 
     def jump(self, height):
+        # print(self.roof)
+        
         if (self.y - height * self.jump_counter) <= self.floor or self.jump_counter >= 0:
             self.y = max(self.y - height * self.jump_counter, self.roof + self.hitbox.height)
             if self.y == self.roof + self.hitbox.height:
@@ -349,7 +377,47 @@ class player:
     # ------------------------------------------------
     # UPDATE
     # ------------------------------------------------
-    def update(self):
+    def update(self, obj, player_obj):
+        # Checks if there is a collision within x-coordinates
+        
+        if not self.check_collision_x(obj):
+
+            # Object is above this movable
+            if self.check_collision_y(obj) == -1:
+                obj.floor = min(obj.floor, self.hitbox.top)
+            elif self.check_collision_y(obj) == 1:
+                obj.roof = max(obj.roof, self.hitbox.bottom)
+            # Object is colliding vertically
+            elif not self.check_collision_y(obj):
+                
+                if(not self.can_move_right and (self.hitbox.centerx > obj.hitbox.centerx)):
+                    obj.can_move_right = self.can_move_right
+                    obj.hitbox.right = self.hitbox.left
+                    obj.x = obj.hitbox.centerx
+                if(not self.can_move_left and (self.hitbox.centerx < obj.hitbox.centerx)):
+                    obj.can_move_left = self.can_move_left
+                    obj.hitbox.left = self.hitbox.right
+                    obj.x = obj.hitbox.centerx
+                # Player pushing right
+
+                if (obj.hitbox.centerx < self.hitbox.centerx) and (player_obj.hitbox.centerx < self.hitbox.centerx) and self.can_move_right:
+                    self.can_move_left=1
+                    self.hitbox.left = obj.hitbox.right
+                    self.x = self.hitbox.centerx
+
+                # Player pushing left
+                elif (obj.hitbox.centerx > self.hitbox.centerx) and (player_obj.hitbox.centerx > self.hitbox.centerx) and self.can_move_left:
+                    self.can_move_right = 1
+                    
+                    # print(self.can_move_right)
+                    # print("alpha")
+                    self.hitbox.right = obj.hitbox.left
+                    self.x = self.hitbox.centerx
+        
+        if((player_obj.hitbox.right==self.hitbox.left or player_obj.hitbox.left==self.hitbox.right) and not(self.check_collision_y(obj))): 
+            return 1
+        return 0
+    def update_player(self):
         
         if self.y != self.floor and not self.jumping:
             self.fall(0.7)

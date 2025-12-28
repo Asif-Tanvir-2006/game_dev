@@ -11,7 +11,6 @@ def draw_all(objects):
     
     for box in objects.movable_objects_list:
         box.draw()
-    
     objects.player_obj.draw()
     objects.ground_obj.draw()
 
