@@ -218,14 +218,14 @@ class player:
                 frame_width=360,   # 1080 / 5
                 frame_height=299,
                 num_frames=3,
-                scale=0.427 * scale_
+                scale=0.427 * scale_ # type: ignore
             ),
             "walk": load_spritesheet(
                 "./assets/sheep_walk.png",
                 frame_width=270,   # 1080 / 4
                 frame_height=213,
                 num_frames=3,
-                scale=0.6 * scale_
+                scale=0.6 * scale_ # type: ignore
             ),
         }
         

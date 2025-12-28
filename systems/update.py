@@ -1,5 +1,4 @@
-from core.constants import INF, SCREEN_WIDTH
-from core.game_objects import immovable_objects
+from core.constants import INF
 
 
 def update_player_wrt_immovable(objects):
